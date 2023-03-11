@@ -68,4 +68,3 @@ def sendNotification(request):
     except Exception:
         print_exc()
         return ('', 500)
-sendNotification(True)
