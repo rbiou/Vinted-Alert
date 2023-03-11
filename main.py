@@ -23,49 +23,48 @@ from constants import NOTIFICATION_CONTENT
 from datetime import datetime, timezone
 
 def sendNotification(request):
-    if __name__ == "__main__":
-        try:
-            req = Request(url=config.URL, headers={'User-Agent': 'Mozilla/5.0'})
-            response = urlopen(req).read()
-            soup = BeautifulSoup(response.decode('utf-8'), 'lxml') # lxml is faster but a dependency, "html.parser" is quite fast and installed by default
-            script = soup.find_all('script')[41] # careful with this as it might change at any update
-            data = json.loads(script.string) # might check the type="application/json"
-            data = data['items']['catalogItems']['byId'].values()
-            # log(data, "Vinted") # --> debug
-            
-            for item in data:
-                # Collect data
-                title = item.get("title", "N/A")
-                price = item.get("price", "ERR") # Format 4,00 €
-                brand = item.get("brand_title", "N/A")
-                login = item.get("user", {}).get("login", "N/A")
-                url = item.get("url", "N/A") # provide not found as default
-                item = "{login} - {title} {price} €".format(login=login, title=title, price=price)
-    	    	# Get more details about the item
-                reqDetails = Request(url=url, headers={'User-Agent': 'Mozilla/5.0'})
-                responseDetails = urlopen(reqDetails).read()
-                soupDetails = BeautifulSoup(responseDetails.decode('utf-8'), 'lxml')
-                scriptDetails = soupDetails.find_all('script', {"data-component-name": "ItemPushUpButton"})[0] # careful with this as it might change at any update
-                dataDetails = json.loads(scriptDetails.string) # might check the type="application/json"
-                dataDetails = dataDetails["item"]
-                images = dataDetails.get("photos", "No Photo")
-                feedback_reputation = dataDetails['user']['feedback_reputation']
-                created_at = datetime.strptime(dataDetails['created_at_ts'], '%Y-%m-%dT%H:%M:%S%z')
-                # Notify if new item from last ten min
-                if ((datetime.now(timezone.utc) - created_at).seconds / 60 < 11):
-                    log("New item : {item} => {url}".format(item=item, url=url), domain="Vinted")
-                    content = NOTIFICATION_CONTENT.format(
-                        price = price,
-                        title = title,
-                        brand = brand,
-    			    	feedback_reputation = "{:.0%}".format(feedback_reputation) if (feedback_reputation and feedback_reputation > 0) else "Non noté ATM",
-                        url = url
-                    )
-                    # Send notification
-                    send_notification(content, images)
-                else:
-                    exit()
-            return ('', 200)
-        except Exception:
-            print_exc()
-            return ('', 500)
+    try:
+        req = Request(url=config.URL, headers={'User-Agent': 'Mozilla/5.0'})
+        response = urlopen(req).read()
+        soup = BeautifulSoup(response.decode('utf-8'), 'lxml') # lxml is faster but a dependency, "html.parser" is quite fast and installed by default
+        script = soup.find_all('script')[41] # careful with this as it might change at any update
+        data = json.loads(script.string) # might check the type="application/json"
+        data = data['items']['catalogItems']['byId'].values()
+        # log(data, "Vinted") # --> debug
+        
+        for item in data:
+            # Collect data
+            title = item.get("title", "N/A")
+            price = item.get("price", "ERR") # Format 4,00 €
+            brand = item.get("brand_title", "N/A")
+            login = item.get("user", {}).get("login", "N/A")
+            url = item.get("url", "N/A") # provide not found as default
+            item = "{login} - {title} {price} €".format(login=login, title=title, price=price)
+     	# Get more details about the item
+            reqDetails = Request(url=url, headers={'User-Agent': 'Mozilla/5.0'})
+            responseDetails = urlopen(reqDetails).read()
+            soupDetails = BeautifulSoup(responseDetails.decode('utf-8'), 'lxml')
+            scriptDetails = soupDetails.find_all('script', {"data-component-name": "ItemPushUpButton"})[0] # careful with this as it might change at any update
+            dataDetails = json.loads(scriptDetails.string) # might check the type="application/json"
+            dataDetails = dataDetails["item"]
+            images = dataDetails.get("photos", "No Photo")
+            feedback_reputation = dataDetails['user']['feedback_reputation']
+            created_at = datetime.strptime(dataDetails['created_at_ts'], '%Y-%m-%dT%H:%M:%S%z')
+            # Notify if new item from last ten min
+            if ((datetime.now(timezone.utc) - created_at).seconds / 60 < 11):
+                log("New item : {item} => {url}".format(item=item, url=url), domain="Vinted")
+                content = NOTIFICATION_CONTENT.format(
+                    price = price,
+                    title = title,
+                    brand = brand,
+       	feedback_reputation = "{:.0%}".format(feedback_reputation) if (feedback_reputation and feedback_reputation > 0) else "Non noté ATM",
+                    url = url
+                )
+                # Send notification
+                send_notification(content, images)
+            else:
+                exit()
+        return ('', 200)
+    except Exception:
+        print_exc()
+        return ('', 500)
