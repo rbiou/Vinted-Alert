@@ -70,7 +70,7 @@ def sendNotification(request):
                     # Send notification
                     send_notification(content, images)
                 else:
-                    exit()
+                    return ('', 200)
         return ('', 200)
     except Exception:
         print_exc()
