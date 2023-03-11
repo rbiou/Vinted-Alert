@@ -27,7 +27,7 @@ def sendNotification(request):
         req = Request(url=config.URL, headers={'User-Agent': 'Mozilla/5.0'})
         response = urlopen(req).read()
         soup = BeautifulSoup(response.decode('utf-8'), 'lxml') # lxml is faster but a dependency, "html.parser" is quite fast and installed by default
-        script = soup.find_all('script')[41] # careful with this as it might change at any update
+        script = soup.find_all('script', {"data-js-react-on-rails-store": "MainStore"})[0] # careful with this as it might change at any update
         data = json.loads(script.string) # might check the type="application/json"
         data = data['items']['catalogItems']['byId'].values()
         # log(data, "Vinted") # --> debug
@@ -68,3 +68,4 @@ def sendNotification(request):
     except Exception:
         print_exc()
         return ('', 500)
+sendNotification(True)
