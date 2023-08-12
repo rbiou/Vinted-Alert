@@ -27,7 +27,7 @@ def sendNotification(request):
     try:
 	    #Read datas
         data = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRIrg56uMRWI3zLci_4FHbA3chxVjnDtucBFhnMxV5sAWkQ4OPXlYkH6jZUTVl-GEUp61ZEowsWlZhc/pub?gid=0&single=true&output=csv", on_bad_lines="skip")
-	    
+        log ("{size} searchs to alert.".format(size=data.size))
         #For each alert requested, check event and deals
         for index, search in data.iterrows():
             log("New search to alert : {url}".format(url=search["url"]), domain="Vinted")
