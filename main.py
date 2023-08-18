@@ -28,10 +28,11 @@ def sendNotification():
 	    #Read datas
         data = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRIrg56uMRWI3zLci_4FHbA3chxVjnDtucBFhnMxV5sAWkQ4OPXlYkH6jZUTVl-GEUp61ZEowsWlZhc/pub?gid=0&single=true&output=csv", on_bad_lines="skip")
         log ("{size} searchs to alert.".format(size=data.size))
+        log(data)
         #For each alert requested, check event and deals
-        for index, search in data.iterrows():
-            log("New search to alert : {url}".format(url=search["url"]), domain="Vinted")
-            req = Request(url=search["url"], headers={'User-Agent': 'Mozilla/5.0'})
+        for index, row in data.iterrows():
+            log("New search to alert : {url}".format(url=row["url"]), domain="Vinted")
+            req = Request(url=row["url"], headers={'User-Agent': 'Mozilla/5.0'})
             response = urlopen(req).read()
             soup = BeautifulSoup(response.decode('utf-8'), 'lxml') # lxml is faster but a dependency, "html.parser" is quite fast and installed by default
             script = soup.find_all('script', {"data-js-react-on-rails-store": "MainStore"})[0] # careful with this as it might change at any update
@@ -69,11 +70,7 @@ def sendNotification():
                     )
                     # Send notification
                     send_notification(content, images)
-                else:
-                    return ('', 200)
-        return ('', 200)
     except Exception:
         print_exc()
-        return ('', 500)
 
 sendNotification()
