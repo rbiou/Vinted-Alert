@@ -23,7 +23,7 @@ from constants import NOTIFICATION_CONTENT
 
 from datetime import datetime, timezone
 
-def sendNotification(request):
+def sendNotification():
     try:
 	    #Read datas
         data = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRIrg56uMRWI3zLci_4FHbA3chxVjnDtucBFhnMxV5sAWkQ4OPXlYkH6jZUTVl-GEUp61ZEowsWlZhc/pub?gid=0&single=true&output=csv", on_bad_lines="skip")
@@ -47,18 +47,18 @@ def sendNotification(request):
                 login = item.get("user", {}).get("login", "N/A")
                 url = item.get("url", "N/A") # provide not found as default
                 item = "{login} - {title} {price} €".format(login=login, title=title, price=price)
-     	    # Get more details about the item
+     	        # Get more details about the item
                 reqDetails = Request(url=url, headers={'User-Agent': 'Mozilla/5.0'})
                 responseDetails = urlopen(reqDetails).read()
                 soupDetails = BeautifulSoup(responseDetails.decode('utf-8'), 'lxml')
-                scriptDetails = soupDetails.find_all('script', {"data-component-name": "ItemPushUpButton"})[0] # careful with this as it might change at any update
+                scriptDetails = soupDetails.find_all('script', {"data-component-name": "ItemDetails"})[0] # careful with this as it might change at any update
                 dataDetails = json.loads(scriptDetails.string) # might check the type="application/json"
                 dataDetails = dataDetails["item"]
                 images = dataDetails.get("photos", "No Photo")
                 feedback_reputation = dataDetails['user']['feedback_reputation']
                 created_at = datetime.strptime(dataDetails['created_at_ts'], '%Y-%m-%dT%H:%M:%S%z')
                 # Notify if new item from last ten min
-                if ((datetime.now(timezone.utc) - created_at).seconds / 60 < 11):
+                if ((datetime.now(timezone.utc) - created_at).seconds / 60 < 30):
                     log("New item : {item} => {url}".format(item=item, url=url), domain="Vinted")
                     content = NOTIFICATION_CONTENT.format(
                         price = price,
@@ -75,3 +75,5 @@ def sendNotification(request):
     except Exception:
         print_exc()
         return ('', 500)
+
+sendNotification()
