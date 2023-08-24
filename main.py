@@ -59,7 +59,7 @@ def sendNotification():
                 feedback_reputation = dataDetails['user']['feedback_reputation']
                 created_at = datetime.strptime(dataDetails['created_at_ts'], '%Y-%m-%dT%H:%M:%S%z')
                 # Notify if new item from last ten min
-                if ((datetime.now(timezone.utc) - timedelta(minutes=30)) < created_at):
+                if ((datetime.now(timezone.utc) - timedelta(minutes=11)) < created_at):
                     log("New item : {item} => {url}".format(item=item, url=url), domain="Vinted")
                     content = NOTIFICATION_CONTENT.format(
                         price = price['amount'],
