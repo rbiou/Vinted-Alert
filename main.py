@@ -47,7 +47,7 @@ def sendNotification():
                 size = item.get("size_title", "N/A")
                 login = item.get("user", {}).get("login", "N/A")
                 url = item.get("url", "N/A") # provide not found as default
-                item = "{login} - {title} {price} €".format(login=login, title=title, price=price)
+                item = "{login} - {title} {price} €".format(login=login, title=title, price=price['amount'])
      	        # Get more details about the item
                 reqDetails = Request(url=url, headers={'User-Agent': 'Mozilla/5.0'})
                 responseDetails = urlopen(reqDetails).read()
