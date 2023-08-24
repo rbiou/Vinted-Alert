@@ -1,7 +1,8 @@
 NOTIFICATION_CONTENT = '''\
 🆕 {title}
-⭐ Réputation : {feedback_reputation}
 🔥 Marque : {brand}
+📐 Taille : {size}
 💴 Prix : {price} €
+⭐ Réputation : {feedback_reputation}
 🔗 {url}
 '''

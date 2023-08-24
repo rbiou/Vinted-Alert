@@ -21,14 +21,13 @@ from utils import log
 from notify import send_notification
 from constants import NOTIFICATION_CONTENT
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 def sendNotification():
     try:
 	    #Read datas
         data = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRIrg56uMRWI3zLci_4FHbA3chxVjnDtucBFhnMxV5sAWkQ4OPXlYkH6jZUTVl-GEUp61ZEowsWlZhc/pub?gid=0&single=true&output=csv", on_bad_lines="skip")
         log ("{size} searchs to alert.".format(size=data.size))
-        log(data)
         #For each alert requested, check event and deals
         for index, row in data.iterrows():
             log("New search to alert : {url}".format(url=row["url"]), domain="Vinted")
@@ -45,6 +44,7 @@ def sendNotification():
                 title = item.get("title", "N/A")
                 price = item.get("price", "ERR") # Format 4,00 €
                 brand = item.get("brand_title", "N/A")
+                size = item.get("size_title", "N/A")
                 login = item.get("user", {}).get("login", "N/A")
                 url = item.get("url", "N/A") # provide not found as default
                 item = "{login} - {title} {price} €".format(login=login, title=title, price=price)
@@ -59,17 +59,21 @@ def sendNotification():
                 feedback_reputation = dataDetails['user']['feedback_reputation']
                 created_at = datetime.strptime(dataDetails['created_at_ts'], '%Y-%m-%dT%H:%M:%S%z')
                 # Notify if new item from last ten min
-                if ((datetime.now(timezone.utc) - created_at).seconds / 60 < 11):
+                if ((datetime.now(timezone.utc) - timedelta(minutes=30)) < created_at):
                     log("New item : {item} => {url}".format(item=item, url=url), domain="Vinted")
                     content = NOTIFICATION_CONTENT.format(
-                        price = price,
+                        price = price['amount'],
                         title = title,
                         brand = brand,
+                        size = size,
        	                feedback_reputation = "{:.0%}".format(feedback_reputation) if (feedback_reputation and feedback_reputation > 0) else "Non noté ATM",
                         url = url
                     )
                     # Send notification
                     send_notification(content, images)
+                else:
+                    log("No new articles to alert")
+                    break
     except Exception:
         print_exc()
 
