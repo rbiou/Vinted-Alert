@@ -1,4 +1,4 @@
-from urllib.parse import parse_qs, urlencode, urlsplit
+from urllib3.parse import parse_qs, urlencode, urlsplit
 from typing import Any, Dict
 import requests
 from datetime import datetime
