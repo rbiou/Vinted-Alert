@@ -12,7 +12,6 @@ from traceback import print_exc
 from random import randint, random
 
 from requests import get
-from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
 from pandas import pandas as pd
 
