@@ -23,7 +23,7 @@ def send_notification(content, images):
         # Send the 3 firsts images
         images_to_send = []
         for image in images[:3]:
-            image_obj = InputMediaPhoto(media = image["url"], caption = content if image == images[0] else '')
+            image_obj = InputMediaPhoto(media = image, caption = content if image == images[0] else '')
             images_to_send.append(image_obj)
         bot.send_media_group(chat_id = CHAT_ID, media = images_to_send)
     except RetryAfter:
