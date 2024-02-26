@@ -24,6 +24,8 @@ from datetime import datetime, timezone, timedelta
 
 from api import search
 
+from pprint import pprint
+
 def send_notification():
     try:
 	    #Read datas
@@ -33,6 +35,7 @@ def send_notification():
         for index, row in data.iterrows():
             log("New search to alert : {url}".format(url=row["url"]), domain="Vinted")
             data = search_via_api(row["url"])
+            pprint(data)
             for item in data:
                 created_at = datetime.fromtimestamp(item['photo']['high_resolution']['timestamp'], timezone.utc)
                 # Notify if new item from last ten min
