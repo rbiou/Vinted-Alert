@@ -24,7 +24,7 @@ from datetime import datetime, timezone, timedelta
 
 from api import search
 
-def sendNotification():
+def send_notification():
     try:
 	    #Read datas
         data = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRIrg56uMRWI3zLci_4FHbA3chxVjnDtucBFhnMxV5sAWkQ4OPXlYkH6jZUTVl-GEUp61ZEowsWlZhc/pub?gid=0&single=true&output=csv", on_bad_lines="skip")
@@ -32,7 +32,7 @@ def sendNotification():
         #For each alert requested, check event and deals
         for index, row in data.iterrows():
             log("New search to alert : {url}".format(url=row["url"]), domain="Vinted")
-            data = searchViaApi(row["url"])
+            data = search_via_api(row["url"])
             for item in data:
                 created_at = datetime.fromtimestamp(item['photo']['high_resolution']['timestamp'], timezone.utc)
                 # Notify if new item from last ten min
@@ -64,6 +64,6 @@ def sendNotification():
     except Exception:
         print_exc()
 
-def searchViaApi(url):
+def search_via_api(url):
     return search(url, {})
-sendNotification()
+send_notification()
