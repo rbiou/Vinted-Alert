@@ -12,7 +12,7 @@ from telegram.error import RetryAfter, TimedOut
 from config import TELEGRAM_KEY, CHAT_ID
 from utils import log
 
-log("Connecting to the Telegram API - Bot : {bot} - Chat : {chat}".format(bot=TELEGRAM_KEY, chat=CHAT_ID), "Telegram")
+log("Connecting to the Telegram API", "Telegram")
 bot = Bot(TELEGRAM_KEY)
 
 
