@@ -38,7 +38,7 @@ def search_and_notify():
                     datetime.strptime(item.created_at_ts, '%Y-%m-%dT%H:%M:%S%z').timestamp(),
                     timezone.utc)
                 # Notify if new item from last ten min
-                if (datetime.now(timezone.utc) - timedelta(minutes=120)) <= created_at:
+                if (datetime.now(timezone.utc) - timedelta(minutes=11)) <= created_at:
                     # Collect data
                     title = item.title
                     price = item.price  # Format 4,00 €
